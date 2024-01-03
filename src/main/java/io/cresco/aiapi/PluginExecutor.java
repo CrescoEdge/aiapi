@@ -1,4 +1,4 @@
-package aiapi;
+package io.cresco.aiapi;
 
 import io.cresco.library.messaging.MsgEvent;
 import io.cresco.library.plugin.Executor;
@@ -71,7 +71,7 @@ public class PluginExecutor implements Executor {
 
     }
 
-    
+
     private MsgEvent repoList(MsgEvent msg) {
         //todo fix repo list
         Map<String,List<Map<String,String>>> repoMap = new HashMap<>();

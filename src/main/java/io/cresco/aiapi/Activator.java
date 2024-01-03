@@ -1,4 +1,4 @@
-package aiapi;
+package io.cresco.aiapi;
 
 
 import org.osgi.framework.BundleActivator;

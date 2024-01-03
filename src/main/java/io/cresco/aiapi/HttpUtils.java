@@ -1,4 +1,4 @@
-package aiapi;
+package io.cresco.aiapi;
 
 import com.google.gson.Gson;
 import org.eclipse.jetty.client.HttpClient;

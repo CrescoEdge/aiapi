@@ -1,4 +1,4 @@
-package aiapi;
+package io.cresco.aiapi;
 
 import io.cresco.library.agent.AgentService;
 import io.cresco.library.messaging.MsgEvent;
@@ -10,7 +10,6 @@ import org.osgi.framework.BundleContext;
 import org.osgi.service.cm.ConfigurationAdmin;
 import org.osgi.service.component.annotations.*;
 
-import java.io.File;
 import java.util.Dictionary;
 import java.util.Hashtable;
 import java.util.Map;
@@ -96,18 +95,6 @@ public class Plugin implements PluginService {
         return jerseyServletParams;
     }
 
-    private String getRepoPath() {
-        String path = null;
-        try {
-            //todo create seperate director for repo
-            path = new File(Plugin.class.getProtectionDomain().getCodeSource().getLocation().toURI()).getParent();
-
-        } catch(Exception ex) {
-            //logger.error(ex.getMessage());
-            ex.printStackTrace();
-        }
-        return path;
-    }
 
     @Override
     public boolean isStarted() {
