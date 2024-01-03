@@ -66,7 +66,8 @@ public class PluginExecutor implements Executor {
         String url = msg.getParam("url");
         String inputText = msg.getParam("input_text");
         int maxTokens = Integer.parseInt(msg.getParam("max_tokens"));
-        msg.setParam("outout_text", httpUtils.getLlmResponse(url, inputText, maxTokens));
+        String response = httpUtils.getLlmResponse(url, inputText, maxTokens);
+        msg.setParam("outout_text", response);
         return msg;
 
     }
