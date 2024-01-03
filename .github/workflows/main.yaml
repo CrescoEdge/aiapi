@@ -1,4 +1,4 @@
-name: Java CI Cresco WSAPI
+name: Java CI Cresco AIAPI
 
 on: [push]
 

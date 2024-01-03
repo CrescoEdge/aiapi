@@ -20,7 +20,7 @@ import java.util.Map;
         service = { PluginService.class },
         scope=ServiceScope.PROTOTYPE,
         configurationPolicy = ConfigurationPolicy.REQUIRE,
-        property="wsapi=core",
+        property="aiapi=core",
         reference= { @Reference(name="io.cresco.library.agent.AgentService", service=AgentService.class)}
 )
 
