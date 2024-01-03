@@ -49,8 +49,7 @@ public class PluginExecutor implements Executor {
                 logger.error("Unknown configtype found {} for {}:", ce.getParam("action"), ce.getMsgType().toString());
 
         }
-
-
+        
         return null;
     }
     @Override
