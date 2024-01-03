@@ -1,0 +1,228 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project xmlns="http://maven.apache.org/POM/4.0.0"
+         xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+    <modelVersion>4.0.0</modelVersion>
+
+    <groupId>io.cresco</groupId>
+    <artifactId>aiapi</artifactId>
+    <version>1.1-SNAPSHOT</version>
+
+    <name>Cresco AIAPI</name>
+    <description>Cresco framework AI API</description>
+    <url>https://github.com/CrescoEdge/aiapi</url>
+
+    <licenses>
+        <license>
+            <name>Apache License, Version 2.0</name>
+            <url>http://www.apache.org/licenses/LICENSE-2.0.txt</url>
+            <distribution>repo</distribution>
+        </license>
+    </licenses>
+
+    <distributionManagement>
+        <snapshotRepository>
+            <id>ossrh</id>
+            <url>https://oss.sonatype.org/content/repositories/snapshots</url>
+        </snapshotRepository>
+        <repository>
+            <id>ossrh</id>
+            <url>https://oss.sonatype.org/service/local/staging/deploy/maven2/</url>
+        </repository>
+    </distributionManagement>
+
+
+    <scm>
+        <connection>scm:git:git://github.com/CrescoEdge/aiapi.git</connection>
+        <developerConnection>scm:git:git://github.com/CrescoEdge/aiapi.git</developerConnection>
+        <url>git@github.com:CrescoEdge/aiapi.git</url>
+    </scm>
+
+    <properties>
+        <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
+        <jdk>1.8</jdk>
+        <mojo.buildnumber.version>1.4</mojo.buildnumber.version>
+        <maven.compiler.version>3.8.1</maven.compiler.version>
+        <maven.bundle.compiler.version>4.2.1</maven.bundle.compiler.version>
+        <jetty.version>9.4.53.v20231009</jetty.version>
+        <bouncycastle.version>1.66</bouncycastle.version>
+    </properties>
+
+    <dependencies>
+
+        <dependency>
+            <groupId>org.osgi</groupId>
+            <artifactId>org.osgi.core</artifactId>
+            <version>6.0.0</version>
+            <scope>provided</scope>
+        </dependency>
+
+        <!-- https://mvnrepository.com/artifact/org.osgi/osgi.cmpn -->
+        <dependency>
+            <groupId>org.osgi</groupId>
+            <artifactId>osgi.cmpn</artifactId>
+            <version>6.0.0</version>
+            <scope>provided</scope>
+        </dependency>
+
+        <dependency>
+            <groupId>org.osgi</groupId>
+            <artifactId>osgi.annotation</artifactId>
+            <version>6.0.1</version>
+        </dependency>
+
+        <!-- https://mvnrepository.com/artifact/org.osgi/org.osgi.service.component.annotations -->
+        <dependency>
+            <groupId>org.osgi</groupId>
+            <artifactId>org.osgi.service.component.annotations</artifactId>
+            <version>1.4.0</version>
+            <scope>provided</scope>
+        </dependency>
+
+        <!-- https://mvnrepository.com/artifact/org.osgi/org.osgi.service.metatype.annotations -->
+        <dependency>
+            <groupId>org.osgi</groupId>
+            <artifactId>org.osgi.service.metatype.annotations</artifactId>
+            <version>1.4.0</version>
+            <scope>provided</scope>
+        </dependency>
+
+        <!-- https://mvnrepository.com/artifact/org.osgi/org.osgi.service.cm -->
+        <dependency>
+            <groupId>org.osgi</groupId>
+            <artifactId>org.osgi.service.cm</artifactId>
+            <version>1.6.0</version>
+            <scope>provided</scope>
+        </dependency>
+
+        <dependency>
+            <groupId>joda-time</groupId>
+            <artifactId>joda-time</artifactId>
+            <version>2.10.3</version>
+        </dependency>
+
+        <dependency>
+            <groupId>io.cresco</groupId>
+            <artifactId>library</artifactId>
+            <version>1.1-SNAPSHOT</version>
+            <scope>provided</scope>
+        </dependency>
+
+        <dependency>
+            <groupId>com.google.code.gson</groupId>
+            <artifactId>gson</artifactId>
+            <version>2.8.9</version>
+        </dependency>
+
+        <!-- https://mvnrepository.com/artifact/org.eclipse.jetty/jetty-client -->
+        <dependency>
+            <groupId>org.eclipse.jetty</groupId>
+            <artifactId>jetty-client</artifactId>
+            <version>${jetty.version}</version>
+        </dependency>
+
+        <dependency>
+            <groupId>org.eclipse.jetty</groupId>
+            <artifactId>jetty-http</artifactId>
+            <version>${jetty.version}</version>
+        </dependency>
+
+        <!-- https://mvnrepository.com/artifact/org.eclipse.jetty/jetty-io -->
+        <dependency>
+            <groupId>org.eclipse.jetty</groupId>
+            <artifactId>jetty-io</artifactId>
+            <version>${jetty.version}</version>
+        </dependency>
+
+        <dependency>
+            <groupId>org.eclipse.jetty</groupId>
+            <artifactId>jetty-util</artifactId>
+            <version>${jetty.version}</version>
+        </dependency>
+
+    </dependencies>
+
+    <build>
+        <resources>
+            <resource>
+                <directory>src/main/resources</directory>
+                <excludes>
+                    <exclude>.idea/**</exclude>
+                    <exclude>node_modules/**</exclude>
+                    <exclude>mock-server.js</exclude>
+                </excludes>
+            </resource>
+        </resources>
+        <plugins>
+
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-compiler-plugin</artifactId>
+                <version>${maven.compiler.version}</version>
+                <configuration>
+                    <source>${jdk}</source>
+                    <target>${jdk}</target>
+                </configuration>
+            </plugin>
+
+            <plugin>
+                <groupId>org.apache.felix</groupId>
+                <artifactId>maven-bundle-plugin</artifactId>
+                <version>${maven.bundle.compiler.version}</version>
+                <extensions>true</extensions>
+
+                <configuration>
+                    <repositoryId>ossrh</repositoryId>
+                    <ignoreLock>true</ignoreLock>
+                    <remoteOBR>https://oss.sonatype.org/content/repositories/snapshots/io/cresco/aiapi</remoteOBR>
+                    <instructions>
+                        <Bundle-SymbolicName>${project.groupId}.${project.artifactId}</Bundle-SymbolicName>
+                        <Bundle-Name>AIAPI Plugin</Bundle-Name>
+                        <Bundle-Description>The Cresco AI API</Bundle-Description>
+                        <Bundle-Vendor>Cresco.io</Bundle-Vendor>
+                        <Bundle-Version>${project.version}-${maven.build.timestamp}</Bundle-Version>
+                        <Bundle-Activator>io.cresco.aiapi.Activator</Bundle-Activator>
+                        <Import-Package>*;resolution:=optional</Import-Package>
+                        <Embed-Dependency>
+                            !org.osgi.*;
+                            !osgi.cmpn.*;
+                            !library;
+                        </Embed-Dependency>
+                        <Export-Package>
+                            <!--
+                            org.hibernate.*;
+                            javax.persistence.*;
+                            org.jboss.logging.*;
+                            org.jboss.jandex.*;
+                            com.fasterxml.classmate.*;
+                            antlr.*;
+                            javax.transaction.*;
+                            net.bytebuddy.*;
+                            org.dom4j.*;
+                            com.coverity.*
+                            -->
+                        </Export-Package>
+                        <Bundle-RequiredExecutionEnvironment>JavaSE-1.8</Bundle-RequiredExecutionEnvironment>
+                    </instructions>
+                </configuration>
+            </plugin>
+
+        </plugins>
+    </build>
+
+    <profiles>
+        <profile>
+            <id>allow-snapshots</id>
+            <activation><activeByDefault>true</activeByDefault></activation>
+            <repositories>
+                <repository>
+                    <id>snapshots-repo</id>
+                    <url>https://oss.sonatype.org/content/repositories/snapshots</url>
+                    <releases><enabled>false</enabled></releases>
+                    <snapshots><enabled>true</enabled></snapshots>
+                </repository>
+            </repositories>
+        </profile>
+    </profiles>
+
+</project>
