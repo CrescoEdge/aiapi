@@ -76,7 +76,7 @@ public class PluginExecutor implements Executor {
             String response = httpUtils.getLlmResponse(url, inputText, maxTokens);
             msg.setParam("status_code","10");
             msg.setParam("status_desc","Query executed properly");
-            msg.setParam("outout_text", response);
+            msg.setParam("output_text", response);
         } else {
             msg.setParam("status_code","9");
             msg.setParam("status_desc","Url_endpoint is null");
