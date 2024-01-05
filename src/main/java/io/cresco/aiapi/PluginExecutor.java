@@ -63,23 +63,19 @@ public class PluginExecutor implements Executor {
 
     private MsgEvent getLlm(MsgEvent msg) {
 
-        String url = null;
-        if(msg.paramsContains("endpoint_url")) {
-            url = msg.getParam("endpoint_url");
-        } else {
-            url = plugin.getConfig().getStringParam("endpoint_url");
+        if(!msg.paramsContains("endpoint_url")) {
+            if(plugin.getConfig().getStringParam("endpoint_url") != null) {
+                msg.setParam("endpoint_url", plugin.getConfig().getStringParam("endpoint_url"));
+            } else {
+                msg.setParam("status_code","9");
+                msg.setParam("status_desc","Url_endpoint is null");
+            }
         }
 
-        if(url != null) {
-            String inputText = msg.getParam("input_text");
-            int maxTokens = Integer.parseInt(msg.getParam("max_tokens"));
-            String response = httpUtils.getLlmResponse(url, inputText, maxTokens);
-            msg.setParam("status_code","10");
-            msg.setParam("status_desc","Query executed properly");
-            msg.setParam("output_text", response);
-        } else {
-            msg.setParam("status_code","9");
-            msg.setParam("status_desc","Url_endpoint is null");
+        if(msg.paramsContains("endpoint_url")) {
+
+            msg = httpUtils.getLlmResponse(msg);
+
         }
 
         return msg;

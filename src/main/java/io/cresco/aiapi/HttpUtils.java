@@ -1,6 +1,7 @@
 package io.cresco.aiapi;
 
 import com.google.gson.Gson;
+import io.cresco.library.messaging.MsgEvent;
 import org.eclipse.jetty.client.HttpClient;
 import org.eclipse.jetty.client.api.ContentResponse;
 import org.eclipse.jetty.client.api.Request;
@@ -16,10 +17,14 @@ public class HttpUtils {
         gson = new Gson();
     }
 
-    public String getLlmResponse(String url, String inputText, int maxTokens) {
+    public MsgEvent getLlmResponse(MsgEvent msg) {
 
-        String llmResponse = null;
         try {
+
+            String url = msg.getParam("endpoint_url");
+            String inputText = msg.getParam("input_text");
+            int maxTokens = Integer.parseInt(msg.getParam("max_tokens"));
+
 
             String inputString = "[INST] " + inputText + " [/INST]";
             String requestString = "{\"inputs\":\"" + inputString + "\",\"parameters\":{\"max_new_tokens\":" + maxTokens + "}}";
@@ -32,13 +37,22 @@ public class HttpUtils {
 
             request.content(new StringContentProvider(requestString,"utf-8"));
             ContentResponse response = request.send();
-            llmResponse = String.valueOf(gson.fromJson(response.getContentAsString(), Map.class).get("generated_text"));
+
+            String llmResponse = String.valueOf(gson.fromJson(response.getContentAsString(), Map.class).get("generated_text"));
+            int responseStatus = response.getStatus();
+
             client.stop();
+
+            msg.setParam("status_code","10");
+            msg.setParam("status_desc","Query executed properly");
+            msg.setParam("response_status_code", String.valueOf(responseStatus));
+            msg.setParam("output_text", llmResponse);
+
 
         } catch (Exception e) {
             e.printStackTrace();
         }
-        return llmResponse;
+        return msg;
     }
 
 }
