@@ -23,15 +23,25 @@ public class HttpUtils {
 
             String url = msg.getParam("endpoint_url");
             String inputText = msg.getParam("input_text");
+            String adapterId = null;
+            if(msg.paramsContains("adapter_id")) {
+                adapterId = msg.getParam("adapter_id");
+            }
             int maxTokens = Integer.parseInt(msg.getParam("max_tokens"));
 
-
             String inputString = "[INST] " + inputText + " [/INST]";
-            String requestString = "{\"inputs\":\"" + inputString + "\",\"parameters\":{\"max_new_tokens\":" + maxTokens + "}}";
+            String requestString = null;
+            if(adapterId != null) {
+                requestString = "{\"inputs\":\"" + inputString + "\",\"parameters\":{\"max_new_tokens\":" + maxTokens +
+                        ", \"adapter_id\":" + adapterId + ", \"adapter_source\":\"local\"}}";
+            } else {
+                requestString = "{\"inputs\":\"" + inputString + "\",\"parameters\":{\"max_new_tokens\":" + maxTokens + "}}";
+            }
+
             HttpClient client = new HttpClient();
             client.setFollowRedirects(false);
             client.start();
-
+            
             Request request = client.POST(url);
             request.header(HttpHeader.CONTENT_TYPE, "application/json");
 
