@@ -29,7 +29,7 @@ public class HttpUtils {
         gson = new Gson();
     }
 
-    
+
     public MsgEvent getLlmResponse(MsgEvent msg) {
 
         try {
