@@ -17,7 +17,7 @@ public class PluginExecutor implements Executor {
     public PluginExecutor(PluginBuilder pluginBuilder) {
         this.plugin = pluginBuilder;
         logger = plugin.getLogger(PluginExecutor.class.getName(),CLogger.Level.Info);
-        httpUtils = new HttpUtils();
+        httpUtils = new HttpUtils(plugin);
     }
 
     @Override
