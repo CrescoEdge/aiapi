@@ -45,6 +45,9 @@ public class PluginExecutor implements Executor {
                 return repoList(ce);
             case "getllm":
                 return getLlm(ce);
+            case "getllmgenerate":
+                return getLlmGenerate(ce);
+
             default:
                 logger.error("Unknown configtype found {} for {}:", ce.getParam("action"), ce.getMsgType().toString());
 
@@ -76,6 +79,27 @@ public class PluginExecutor implements Executor {
 
             msg = httpUtils.getLlmResponse(msg);
 
+        }
+
+        return msg;
+
+    }
+
+    private MsgEvent getLlmGenerate(MsgEvent msg) {
+
+        if(!msg.paramsContains("endpoint_url")) {
+            if(plugin.getConfig().getStringParam("endpoint_url") != null) {
+                msg.setParam("endpoint_url", plugin.getConfig().getStringParam("endpoint_url"));
+            }
+        }
+
+        if((msg.paramsContains("endpoint_url") && (msg.paramsContains("endpoint_payload")))) {
+
+            msg = httpUtils.getLlmGenerate(msg);
+
+        } else {
+            msg.setParam("status_code","9");
+            msg.setParam("status_desc","Url_endpoint or endpoint_payload is null");
         }
 
         return msg;

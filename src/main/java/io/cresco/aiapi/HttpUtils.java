@@ -81,4 +81,43 @@ public class HttpUtils {
         return msg;
     }
 
+    public MsgEvent getLlmGenerate(MsgEvent msg) {
+
+        try {
+
+            String url = msg.getParam("endpoint_url");
+            String requestString = msg.getParam("endpoint_payload");
+
+            logger.error("URL: " + url);
+            logger.error("Payload: " + requestString);
+
+            HttpClient client = new HttpClient();
+            client.setFollowRedirects(false);
+            client.start();
+
+            Request request = client.POST(url);
+            request.header(HttpHeader.CONTENT_TYPE, "application/json");
+
+            request.content(new StringContentProvider(requestString,"utf-8"));
+            ContentResponse response = request.send();
+            String contentString = response.getContentAsString();
+            logger.error("content: " + contentString);
+            //List<Map<String,String>> lmresponse = gson.fromJson(contentString, typeOfListMap);
+            //String llmResponse = String.valueOf(lmresponse.get(0).get("generated_text"));
+            int responseStatus = response.getStatus();
+
+            client.stop();
+
+            msg.setParam("status_code","10");
+            msg.setParam("status_desc","Query executed properly");
+            msg.setParam("response_status_code", String.valueOf(responseStatus));
+            msg.setParam("llm_response", contentString);
+
+
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        return msg;
+    }
+
 }
