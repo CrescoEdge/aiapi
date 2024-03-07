@@ -24,8 +24,7 @@ public class HttpUtils {
             String url = msg.getParam("endpoint_url");
             String inputText = msg.getParam("input_text");
             int maxTokens = Integer.parseInt(msg.getParam("max_tokens"));
-
-
+            
             String inputString = "[INST] " + inputText + " [/INST]";
             String requestString = "{\"inputs\":\"" + inputString + "\",\"parameters\":{\"max_new_tokens\":" + maxTokens + "}}";
             HttpClient client = new HttpClient();
