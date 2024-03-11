@@ -177,19 +177,23 @@ public class PluginExecutor implements Executor {
     public void getObjectBytes(String accessKey, String secretKey, String urlString, String bucketName, String keyName, String path) {
 
         try {
+            logger.error("GET ADAPTER 4");
             // Create a minioClient with the MinIO server playground, its access key and secret key.
             MinioClient minioClient =
                     MinioClient.builder()
                             .endpoint(urlString)
                             .credentials(accessKey, secretKey)
                             .build();
-
+            logger.error("GET ADAPTER 5");
+            /*
             minioClient.uploadObject(
                     UploadObjectArgs.builder()
                             .bucket(bucketName)
                             .object(keyName)
                             .filename(path)
                             .build());
+                            
+             */
 
         } catch (Exception exc) {
             StringWriter sw = new StringWriter();
