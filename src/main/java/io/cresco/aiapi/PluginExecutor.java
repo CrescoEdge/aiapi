@@ -4,7 +4,23 @@ import io.cresco.library.messaging.MsgEvent;
 import io.cresco.library.plugin.Executor;
 import io.cresco.library.plugin.PluginBuilder;
 import io.cresco.library.utilities.CLogger;
+import org.eclipse.jetty.util.IO;
+import software.amazon.awssdk.auth.credentials.AwsBasicCredentials;
+import software.amazon.awssdk.auth.credentials.AwsCredentialsProvider;
+import software.amazon.awssdk.auth.credentials.StaticCredentialsProvider;
+import software.amazon.awssdk.core.ResponseBytes;
+import software.amazon.awssdk.regions.Region;
+import software.amazon.awssdk.services.s3.S3Client;
+import software.amazon.awssdk.services.s3.model.GetObjectRequest;
+import software.amazon.awssdk.services.s3.model.GetObjectResponse;
+import software.amazon.awssdk.services.s3.model.S3Exception;
 
+import java.io.IOException;
+import java.io.InputStream;
+import java.io.OutputStream;
+import java.net.URI;
+import java.nio.file.Files;
+import java.nio.file.Paths;
 import java.util.*;
 
 public class PluginExecutor implements Executor {
@@ -38,7 +54,7 @@ public class PluginExecutor implements Executor {
     }
     @Override
     public MsgEvent executeEXEC(MsgEvent ce) {
-
+        logger.error("EXEC: " + ce.getParam("action"));
         switch (ce.getParam("action")) {
 
             case "repolist":
@@ -47,6 +63,8 @@ public class PluginExecutor implements Executor {
                 return getLlm(ce);
             case "getllmgenerate":
                 return getLlmGenerate(ce);
+            case "getllmadapter":
+                return getLlmAdapter(ce);
 
             default:
                 logger.error("Unknown configtype found {} for {}:", ce.getParam("action"), ce.getMsgType().toString());
@@ -118,6 +136,89 @@ public class PluginExecutor implements Executor {
         //msg.setCompressedParam("repolist",gson.toJson(repoMap));
         return msg;
 
+    }
+
+    private MsgEvent getLlmAdapter(MsgEvent msg) {
+
+        logger.error("GET ADAPTER");
+
+        List<String> paramList = new ArrayList<>();
+        paramList.add("s3_access_key");
+        paramList.add("s3_secret_key");
+        paramList.add("s3_url");
+        paramList.add("s3_bucket");
+        paramList.add("s3_key");
+        paramList.add("local_path");
+
+        List<String> missingParamList = new ArrayList<>(paramList);
+
+        for(String param : paramList) {
+            if(msg.paramsContains(param)) {
+                missingParamList.remove(param);
+            }
+        }
+
+        if(missingParamList.isEmpty()) {
+            //all params are here
+            String accessKey = msg.getParam("s3_access_key");
+            String secretKey = msg.getParam("s3_secret_key");
+            String urlString = msg.getParam("s3_url");
+            String bucketName = msg.getParam("s3_bucket");
+            String keyName = msg.getParam("s3_key");
+            String path = msg.getParam("local_path");
+            getObjectBytes(accessKey, secretKey, urlString, bucketName, keyName, path);
+
+
+        } else {
+            String missingListString = String.join(", ", missingParamList);
+            msg.setParam("status_code","9");
+            msg.setParam("status_desc","missing parameters: " + missingListString);
+        }
+
+        return msg;
+
+    }
+
+    public void getObjectBytes(String accessKey, String secretKey, String urlString, String bucketName, String keyName, String path) {
+
+        try {
+
+            AwsBasicCredentials credentials = AwsBasicCredentials.create(accessKey,secretKey);
+            AwsCredentialsProvider provider = StaticCredentialsProvider.create(credentials);
+
+            URI myURI = new URI(urlString);
+
+            Region region = Region.US_EAST_1;
+
+            S3Client s3 = S3Client.builder()
+                    .credentialsProvider(provider)
+                    .region(region)
+                    .endpointOverride(myURI)
+                    .forcePathStyle(true) // <-- this fixes runing localhost
+                    .build();
+
+            GetObjectRequest objectRequest = GetObjectRequest
+                    .builder()
+                    .key(keyName)
+                    .bucket(bucketName)
+                    .build();
+
+            ResponseBytes<GetObjectResponse> objectBytes = s3.getObjectAsBytes(objectRequest);
+
+            InputStream inputStream = objectBytes.asInputStream();
+            OutputStream outputStream = Files.newOutputStream(Paths.get(path));
+            IO.copy(inputStream, outputStream);
+            s3.close();
+
+
+        } catch (IOException ex) {
+            ex.printStackTrace();
+        } catch (S3Exception e) {
+            System.err.println(e.awsErrorDetails().errorMessage());
+            System.exit(1);
+        } catch (Exception exc) {
+            exc.printStackTrace();
+        }
     }
 
 }
