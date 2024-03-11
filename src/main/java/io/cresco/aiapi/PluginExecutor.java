@@ -183,33 +183,36 @@ public class PluginExecutor implements Executor {
     public void getObjectBytes(String accessKey, String secretKey, String urlString, String bucketName, String keyName, String path) {
 
         try {
-
+            logger.error("GET ADAPTER 2.1");
             AwsBasicCredentials credentials = AwsBasicCredentials.create(accessKey,secretKey);
             AwsCredentialsProvider provider = StaticCredentialsProvider.create(credentials);
-
+            logger.error("GET ADAPTER 2.2");
             URI myURI = new URI(urlString);
 
             Region region = Region.US_EAST_1;
-
+            logger.error("GET ADAPTER 2.3");
             S3Client s3 = S3Client.builder()
                     .credentialsProvider(provider)
                     .region(region)
                     .endpointOverride(myURI)
                     .forcePathStyle(true) // <-- this fixes runing localhost
                     .build();
-
+            logger.error("GET ADAPTER 2.4");
             GetObjectRequest objectRequest = GetObjectRequest
                     .builder()
                     .key(keyName)
                     .bucket(bucketName)
                     .build();
-
+            logger.error("GET ADAPTER 2.5");
             ResponseBytes<GetObjectResponse> objectBytes = s3.getObjectAsBytes(objectRequest);
-
+            logger.error("GET ADAPTER 2.6");
             InputStream inputStream = objectBytes.asInputStream();
             OutputStream outputStream = Files.newOutputStream(Paths.get(path));
+            logger.error("GET ADAPTER 2.7");
             IO.copy(inputStream, outputStream);
+            logger.error("GET ADAPTER 2.8");
             s3.close();
+            logger.error("GET ADAPTER 2.9");
 
 
         } catch (IOException ex) {
