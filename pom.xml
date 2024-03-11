@@ -152,6 +152,14 @@
             <version>2.25.1</version>
         </dependency>
 
+        <!-- https://mvnrepository.com/artifact/software.amazon.awssdk/aws-core -->
+        <dependency>
+            <groupId>software.amazon.awssdk</groupId>
+            <artifactId>aws-core</artifactId>
+            <version>2.25.1</version>
+        </dependency>
+
+
     </dependencies>
 
     <build>
