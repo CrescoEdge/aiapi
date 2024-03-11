@@ -15,9 +15,7 @@ import software.amazon.awssdk.services.s3.model.GetObjectRequest;
 import software.amazon.awssdk.services.s3.model.GetObjectResponse;
 import software.amazon.awssdk.services.s3.model.S3Exception;
 
-import java.io.IOException;
-import java.io.InputStream;
-import java.io.OutputStream;
+import java.io.*;
 import java.net.URI;
 import java.nio.file.Files;
 import java.nio.file.Paths;
@@ -212,10 +210,19 @@ public class PluginExecutor implements Executor {
 
 
         } catch (IOException ex) {
-            ex.printStackTrace();
+            logger.error("getObjectBytes: " + ex.getMessage());
+            StringWriter sw = new StringWriter();
+            PrintWriter pw = new PrintWriter(sw);
+            ex.printStackTrace(pw);
+            logger.error(sw.toString());
         } catch (S3Exception e) {
-            System.err.println(e.awsErrorDetails().errorMessage());
-            System.exit(1);
+            logger.error("getObjectBytes: " + e.getMessage());
+            //System.err.println(e.awsErrorDetails().errorMessage());
+            //System.exit(1);
+            StringWriter sw = new StringWriter();
+            PrintWriter pw = new PrintWriter(sw);
+            e.printStackTrace(pw);
+            logger.error(sw.toString());
         } catch (Exception exc) {
             exc.printStackTrace();
         }
