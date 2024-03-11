@@ -113,7 +113,7 @@ public class Plugin implements PluginService {
                 }
 
                 pluginBuilder.setIsActive(true);
-
+                logger.info("AIAPI Active");
 
             }
             return true;
