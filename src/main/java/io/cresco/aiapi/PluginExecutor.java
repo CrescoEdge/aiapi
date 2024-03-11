@@ -157,6 +157,7 @@ public class PluginExecutor implements Executor {
         }
 
         if(missingParamList.isEmpty()) {
+            logger.error("GET ADAPTER 1");
             //all params are here
             String accessKey = msg.getParam("s3_access_key");
             String secretKey = msg.getParam("s3_secret_key");
@@ -164,10 +165,12 @@ public class PluginExecutor implements Executor {
             String bucketName = msg.getParam("s3_bucket");
             String keyName = msg.getParam("s3_key");
             String path = msg.getParam("local_path");
+            logger.error("GET ADAPTER 2");
             getObjectBytes(accessKey, secretKey, urlString, bucketName, keyName, path);
-
+            logger.error("GET ADAPTER 3");
 
         } else {
+            logger.error("GET ADAPTER 4");
             String missingListString = String.join(", ", missingParamList);
             msg.setParam("status_code","9");
             msg.setParam("status_desc","missing parameters: " + missingListString);
@@ -224,7 +227,10 @@ public class PluginExecutor implements Executor {
             e.printStackTrace(pw);
             logger.error(sw.toString());
         } catch (Exception exc) {
-            exc.printStackTrace();
+            StringWriter sw = new StringWriter();
+            PrintWriter pw = new PrintWriter(sw);
+            exc.printStackTrace(pw);
+            logger.error(sw.toString());
         }
     }
 
