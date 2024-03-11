@@ -146,9 +146,10 @@
             <version>2.25.1</version>
         </dependency>
 
+        <!-- https://mvnrepository.com/artifact/software.amazon.awssdk/auth -->
         <dependency>
             <groupId>software.amazon.awssdk</groupId>
-            <artifactId>sdk-core</artifactId>
+            <artifactId>auth</artifactId>
             <version>2.25.1</version>
         </dependency>
 

@@ -14,7 +14,7 @@ import software.amazon.awssdk.services.s3.S3Client;
 import software.amazon.awssdk.services.s3.model.GetObjectRequest;
 import software.amazon.awssdk.services.s3.model.GetObjectResponse;
 import software.amazon.awssdk.services.s3.model.S3Exception;
-import software.amazon.awssdk.awscore.exception.AwsServiceException;
+import software.amazon.awssdk.auth.credentials.AwsCredentials;
 
 import java.io.IOException;
 import java.io.InputStream;
