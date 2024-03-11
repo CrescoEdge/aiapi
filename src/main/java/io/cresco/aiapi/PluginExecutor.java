@@ -4,16 +4,10 @@ import io.cresco.library.messaging.MsgEvent;
 import io.cresco.library.plugin.Executor;
 import io.cresco.library.plugin.PluginBuilder;
 import io.cresco.library.utilities.CLogger;
+import io.minio.MinioClient;
+import io.minio.UploadObjectArgs;
 import org.eclipse.jetty.util.IO;
-import software.amazon.awssdk.auth.credentials.AwsBasicCredentials;
-import software.amazon.awssdk.auth.credentials.AwsCredentialsProvider;
-import software.amazon.awssdk.auth.credentials.StaticCredentialsProvider;
-import software.amazon.awssdk.core.ResponseBytes;
-import software.amazon.awssdk.regions.Region;
-import software.amazon.awssdk.services.s3.S3Client;
-import software.amazon.awssdk.services.s3.model.GetObjectRequest;
-import software.amazon.awssdk.services.s3.model.GetObjectResponse;
-import software.amazon.awssdk.services.s3.model.S3Exception;
+
 
 import java.io.*;
 import java.net.URI;
@@ -183,6 +177,32 @@ public class PluginExecutor implements Executor {
     public void getObjectBytes(String accessKey, String secretKey, String urlString, String bucketName, String keyName, String path) {
 
         try {
+            // Create a minioClient with the MinIO server playground, its access key and secret key.
+            MinioClient minioClient =
+                    MinioClient.builder()
+                            .endpoint(urlString)
+                            .credentials(accessKey, secretKey)
+                            .build();
+
+            minioClient.uploadObject(
+                    UploadObjectArgs.builder()
+                            .bucket(bucketName)
+                            .object(keyName)
+                            .filename(path)
+                            .build());
+
+        } catch (Exception exc) {
+            StringWriter sw = new StringWriter();
+            PrintWriter pw = new PrintWriter(sw);
+            exc.printStackTrace(pw);
+            logger.error(sw.toString());
+        }
+    }
+
+    /*
+    public void getObjectBytes(String accessKey, String secretKey, String urlString, String bucketName, String keyName, String path) {
+
+        try {
             logger.error("GET ADAPTER 2.1");
             AwsBasicCredentials credentials = AwsBasicCredentials.create(accessKey,secretKey);
             AwsCredentialsProvider provider = StaticCredentialsProvider.create(credentials);
@@ -236,5 +256,7 @@ public class PluginExecutor implements Executor {
             logger.error(sw.toString());
         }
     }
+
+     */
 
 }
