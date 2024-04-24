@@ -112,8 +112,8 @@ public class HttpUtils {
             msg.setParam("status_desc","Query executed properly");
             msg.setParam("response_status_code", String.valueOf(responseStatus));
             msg.setParam("llm_response", contentString);
-
-
+            msg.setCompressedParam("llm_response_compressed", contentString);
+            
         } catch (Exception e) {
             e.printStackTrace();
         }
