@@ -11,12 +11,12 @@ public class PluginExecutor implements Executor {
     private PluginBuilder plugin;
     private CLogger logger;
 
-    private HttpUtils httpUtils;
+    private AIClientEngine aiClientEngine;
 
-    public PluginExecutor(PluginBuilder pluginBuilder) {
+    public PluginExecutor(PluginBuilder pluginBuilder, AIClientEngine aiClientEngine) {
         this.plugin = pluginBuilder;
         logger = plugin.getLogger(PluginExecutor.class.getName(),CLogger.Level.Info);
-        httpUtils = new HttpUtils(plugin);
+        this.aiClientEngine = aiClientEngine;
     }
 
     @Override
@@ -67,18 +67,18 @@ public class PluginExecutor implements Executor {
 
     private MsgEvent getLlm(MsgEvent msg) {
 
-        if(!msg.paramsContains("endpoint_url")) {
-            if(plugin.getConfig().getStringParam("endpoint_url") != null) {
-                msg.setParam("endpoint_url", plugin.getConfig().getStringParam("endpoint_url"));
+        if(!msg.paramsContains("endpoint_url_chat")) {
+            if(plugin.getConfig().getStringParam("endpoint_url_chat") != null) {
+                msg.setParam("endpoint_url_chat", plugin.getConfig().getStringParam("endpoint_url"));
             } else {
                 msg.setParam("status_code","9");
                 msg.setParam("status_desc","Url_endpoint is null");
             }
         }
 
-        if(msg.paramsContains("endpoint_url")) {
+        if(msg.paramsContains("endpoint_url_chat")) {
 
-            msg = httpUtils.getLlmResponse(msg);
+            msg = aiClientEngine.getLlmResponse(msg);
 
         }
 
@@ -88,15 +88,15 @@ public class PluginExecutor implements Executor {
 
     private MsgEvent getLlmGenerate(MsgEvent msg) {
 
-        if(!msg.paramsContains("endpoint_url")) {
-            if(plugin.getConfig().getStringParam("endpoint_url") != null) {
-                msg.setParam("endpoint_url", plugin.getConfig().getStringParam("endpoint_url"));
+        if(!msg.paramsContains("endpoint_url_chat")) {
+            if(plugin.getConfig().getStringParam("endpoint_url_chat") != null) {
+                msg.setParam("endpoint_url_chat", plugin.getConfig().getStringParam("endpoint_url"));
             }
         }
 
-        if((msg.paramsContains("endpoint_url") && (msg.paramsContains("endpoint_payload")))) {
+        if((msg.paramsContains("endpoint_url_chat") && (msg.paramsContains("endpoint_payload")))) {
 
-            msg = httpUtils.getLlmGenerate(msg);
+            msg = aiClientEngine.getLlmGenerate(msg);
 
         } else {
             msg.setParam("status_code","9");
@@ -122,6 +122,7 @@ public class PluginExecutor implements Executor {
     }
 
     private MsgEvent getLlmAdapter(MsgEvent msg) {
+        //endpoint_url_chat_adapter_path
 
         logger.error("GET ADAPTER");
 

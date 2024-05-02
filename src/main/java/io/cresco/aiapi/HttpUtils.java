@@ -34,7 +34,7 @@ public class HttpUtils {
 
         try {
 
-            String url = msg.getParam("endpoint_url");
+            String url = msg.getParam("endpoint_url_chat");
             String inputText = msg.getParam("input_text");
             String adapterId = null;
             if(msg.paramsContains("adapter_id")) {
@@ -85,7 +85,7 @@ public class HttpUtils {
 
         try {
 
-            String url = msg.getParam("endpoint_url");
+            String url = msg.getParam("endpoint_url_chat");
             String requestString = msg.getParam("endpoint_payload");
 
             logger.error("URL: " + url);

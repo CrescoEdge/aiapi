@@ -36,6 +36,8 @@ public class Plugin implements PluginService {
     private ConfigurationAdmin configurationAdmin;
     private Map<String,Object> map;
 
+    private  AIClientEngine aiClientEngine;
+
     @Activate
     void activate(BundleContext context, Map<String,Object> map) {
 
@@ -103,7 +105,8 @@ public class Plugin implements PluginService {
             if(pluginBuilder == null) {
                 pluginBuilder = new PluginBuilder(this.getClass().getName(), context, map);
                 this.logger = pluginBuilder.getLogger(Plugin.class.getName(), CLogger.Level.Info);
-                this.executor = new PluginExecutor(pluginBuilder);
+                aiClientEngine = new AIClientEngine(pluginBuilder);
+                this.executor = new PluginExecutor(pluginBuilder, aiClientEngine);
                 pluginBuilder.setExecutor(executor);
 
                 while (!pluginBuilder.getAgentService().getAgentState().isActive()) {
@@ -131,6 +134,9 @@ public class Plugin implements PluginService {
         if(pluginBuilder != null) {
             pluginBuilder.setExecutor(null);
             pluginBuilder.setIsActive(false);
+            if(aiClientEngine != null) {
+                aiClientEngine.shutdown();
+            }
         }
         return true;
     }
