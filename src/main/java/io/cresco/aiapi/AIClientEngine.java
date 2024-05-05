@@ -134,6 +134,53 @@ public class AIClientEngine {
         return msg;
     }
 
+    public MsgEvent getServiceRequest(MsgEvent msg) {
+
+        try {
+
+            String serviceId = msg.getParam("service_id");
+            String requestString = msg.getParam("endpoint_payload");
+            String url = null;
+            if(endpointChatServiceId.equals(serviceId)) {
+                url = plugin.getConfig().getStringParam("endpoint_url_chat");
+            } else if (endpointEmbServiceId.equals(serviceId)) {
+                url = plugin.getConfig().getStringParam("endpoint_url_emb");
+            }
+
+            if(url != null) {
+                logger.error("URL: " + url);
+                logger.error("Payload: " + requestString);
+
+                HttpClient client = new HttpClient();
+                client.setFollowRedirects(false);
+                client.start();
+
+                Request request = client.POST(url);
+                request.header(HttpHeader.CONTENT_TYPE, "application/json");
+
+                request.content(new StringContentProvider(requestString, "utf-8"));
+                ContentResponse response = request.send();
+                String contentString = response.getContentAsString();
+                logger.error("content: " + contentString);
+                int responseStatus = response.getStatus();
+
+                client.stop();
+
+                msg.setParam("status_code", "10");
+                msg.setParam("status_desc", "Query executed properly");
+                msg.setParam("response_status_code", String.valueOf(responseStatus));
+                //msg.setParam("llm_response", contentString);
+                msg.setCompressedParam("service_response_compressed", contentString);
+            } else {
+                msg.setParam("status_code","8");
+                msg.setParam("status_desc","service_id didn't match known service");
+            }
+
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        return msg;
+    }
     public MsgEvent getLlmGenerate(MsgEvent msg) {
 
         try {
@@ -188,6 +235,9 @@ public class AIClientEngine {
 
             Map<String,Map<String,Object>> serviceMap = new HashMap<>();
 
+            serviceMap.put("services", new HashMap<>());
+            List<String> serviceList = new ArrayList<>();
+
             serviceMap.put("agent", new HashMap<>());
             serviceMap.get("agent").put("region_id",plugin.getRegion());
             serviceMap.get("agent").put("agent_id",plugin.getAgent());
@@ -200,6 +250,8 @@ public class AIClientEngine {
                 serviceMap.put("chat", new HashMap<>());
                 serviceMap.get("chat").put("service_id", endpointChatServiceId);
                 serviceMap.get("chat").put("info", chatResponseMap);
+
+                serviceList.add("chat");
             }
 
             if(plugin.getConfig().getStringParam("endpoint_url_emb") != null) {
@@ -210,8 +262,11 @@ public class AIClientEngine {
                 serviceMap.get("emb").put("service_id", endpointEmbServiceId);
                 serviceMap.get("emb").put("info", embResponseMap);
 
+                serviceList.add("emb");
+
             }
 
+            serviceMap.get("services").put("list", serviceList);
             serviceMapString = gson.toJson(serviceMap);
 
         } catch (Exception ex) {

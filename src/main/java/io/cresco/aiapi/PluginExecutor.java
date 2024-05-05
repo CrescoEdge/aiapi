@@ -46,6 +46,8 @@ public class PluginExecutor implements Executor {
                 return getLlm(ce);
             case "getllmgenerate":
                 return getLlmGenerate(ce);
+            case "getservicerequest":
+                return getServiceRequest(ce);
             case "getllmadapter":
                 return getLlmAdapter(ce);
 
@@ -86,6 +88,21 @@ public class PluginExecutor implements Executor {
 
     }
 
+    private MsgEvent getServiceRequest(MsgEvent msg) {
+
+
+        if((msg.paramsContains("service_id") && (msg.paramsContains("endpoint_payload")))) {
+
+            msg = aiClientEngine.getServiceRequest(msg);
+
+        } else {
+            msg.setParam("status_code","9");
+            msg.setParam("status_desc","service_id or endpoint_payload is null");
+        }
+
+        return msg;
+
+    }
     private MsgEvent getLlmGenerate(MsgEvent msg) {
 
         if(!msg.paramsContains("endpoint_url_chat")) {
