@@ -22,6 +22,8 @@ public class AIClientEngine {
     private final Gson gson;
     private CLogger logger;
 
+    private String endpointChatServiceId = UUID.randomUUID().toString();
+    private String endpointEmbServiceId = UUID.randomUUID().toString();
     private Timer serviceBroadcastTimer;
 
     private final Type mapType = new TypeToken<Map<String, Object>>() {}.getType();
@@ -196,6 +198,7 @@ public class AIClientEngine {
 
                 Map<String,Object> chatResponseMap = getInfo(chatUrl);
                 serviceMap.put("chat", new HashMap<>());
+                serviceMap.get("chat").put("service_id", endpointChatServiceId);
                 serviceMap.get("chat").put("info", chatResponseMap);
             }
 
@@ -204,6 +207,7 @@ public class AIClientEngine {
 
                 Map<String,Object> embResponseMap = getInfo(embUrl);
                 serviceMap.put("emb", new HashMap<>());
+                serviceMap.get("emb").put("service_id", endpointEmbServiceId);
                 serviceMap.get("emb").put("info", embResponseMap);
 
             }
