@@ -21,7 +21,6 @@ public class AIClientEngine {
     private PluginBuilder plugin;
     private final Gson gson;
     private CLogger logger;
-
     private String endpointChatServiceId = UUID.randomUUID().toString();
     private String endpointEmbServiceId = UUID.randomUUID().toString();
     private Timer serviceBroadcastTimer;
