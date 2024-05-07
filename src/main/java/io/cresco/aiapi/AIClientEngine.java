@@ -21,8 +21,8 @@ public class AIClientEngine {
     private PluginBuilder plugin;
     private final Gson gson;
     private CLogger logger;
-    private String endpointChatServiceId = UUID.randomUUID().toString();
-    private String endpointEmbServiceId = UUID.randomUUID().toString();
+    private String endpointChatServiceId;
+    private String endpointEmbServiceId;
     private Timer serviceBroadcastTimer;
 
     private final Type mapType = new TypeToken<Map<String, Object>>() {}.getType();
@@ -33,6 +33,8 @@ public class AIClientEngine {
         this.plugin = plugin;
         logger = plugin.getLogger(PluginExecutor.class.getName(),CLogger.Level.Info);
         gson = new Gson();
+        endpointChatServiceId = plugin.getConfig().getStringParam("endpoint_chat_service_id", UUID.randomUUID().toString());
+        endpointEmbServiceId = plugin.getConfig().getStringParam("endpoint_emb_service_id", UUID.randomUUID().toString());
         startServiceBroadcast();
     }
 
