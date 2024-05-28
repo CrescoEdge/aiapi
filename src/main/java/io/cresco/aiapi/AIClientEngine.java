@@ -9,6 +9,8 @@ import io.cresco.library.utilities.CLogger;
 import org.eclipse.jetty.client.HttpClient;
 import org.eclipse.jetty.client.api.ContentResponse;
 import org.eclipse.jetty.client.api.Request;
+import org.eclipse.jetty.client.util.BytesContentProvider;
+import org.eclipse.jetty.client.util.MultiPartContentProvider;
 import org.eclipse.jetty.client.util.StringContentProvider;
 import org.eclipse.jetty.http.HttpHeader;
 
@@ -142,7 +144,7 @@ public class AIClientEngine {
     public MsgEvent getServiceRequest(MsgEvent msg) {
 
         try {
-
+            MultiPartContentProvider multiPart = null;
             String serviceId = msg.getParam("service_id");
             String requestString = msg.getParam("endpoint_payload");
             String url = null;
@@ -152,6 +154,16 @@ public class AIClientEngine {
                 url = plugin.getConfig().getStringParam("endpoint_url_emb");
             } else if (endpointTranscribeServiceId.equals(serviceId)) {
                 url = plugin.getConfig().getStringParam("endpoint_url_transcribe");
+                multiPart = new MultiPartContentProvider();
+                multiPart.addFieldPart("model", new StringContentProvider("whisper-1"), null);
+                multiPart.addFilePart("file", "file", new BytesContentProvider(msg.getDataParam("endpoint_payload_binary")), null);
+                /*
+                curl --request POST \
+                --url http://10.10.10.55:8082/v1/audio/transcriptions \
+                --header 'Content-Type: multipart/form-data' \
+                --form file=@sample-0.mp3 \
+                --form model=whisper-1
+                 */
             }
 
             if(url != null) {
@@ -163,9 +175,14 @@ public class AIClientEngine {
                 client.start();
 
                 Request request = client.POST(url);
-                request.header(HttpHeader.CONTENT_TYPE, "application/json");
-
-                request.content(new StringContentProvider(requestString, "utf-8"));
+                if(multiPart != null) {
+                    request.header(HttpHeader.CONTENT_TYPE, "multipart/form-data");
+                    request.content(multiPart);
+                } else {
+                    request.header(HttpHeader.CONTENT_TYPE, "application/json");
+                    request.content(new StringContentProvider(requestString, "utf-8"));
+                }
+                
                 ContentResponse response = request.send();
                 String contentString = response.getContentAsString();
                 logger.error("content: " + contentString);
