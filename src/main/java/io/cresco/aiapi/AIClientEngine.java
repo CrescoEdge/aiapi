@@ -165,12 +165,13 @@ public class AIClientEngine {
                 logger.error("Payload: " + requestString);
 
                 HttpClient client = new HttpClient();
+
                 client.setFollowRedirects(false);
                 client.start();
 
                 Request request = client.POST(url);
                 if(multiPart != null) {
-                    request.header(HttpHeader.CONTENT_TYPE, "multipart/form-data");
+                    //request.header(HttpHeader.CONTENT_TYPE, "multipart/form-data");
                     request.content(multiPart);
                 } else {
                     request.header(HttpHeader.CONTENT_TYPE, "application/json");
