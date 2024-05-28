@@ -155,8 +155,9 @@ public class AIClientEngine {
             } else if (endpointTranscribeServiceId.equals(serviceId)) {
                 url = plugin.getConfig().getStringParam("endpoint_url_transcribe");
                 multiPart = new MultiPartContentProvider();
-                multiPart.addFieldPart("model", new StringContentProvider("whisper-1"), null);
                 multiPart.addFilePart("file", "file", new BytesContentProvider(msg.getDataParam("endpoint_payload_binary")), null);
+                multiPart.addFieldPart("model", new StringContentProvider("whisper-1"), null);
+                
                 /*
                 curl --request POST \
                 --url http://10.10.10.55:8082/v1/audio/transcriptions \
@@ -182,7 +183,7 @@ public class AIClientEngine {
                     request.header(HttpHeader.CONTENT_TYPE, "application/json");
                     request.content(new StringContentProvider(requestString, "utf-8"));
                 }
-                
+
                 ContentResponse response = request.send();
                 String contentString = response.getContentAsString();
                 logger.error("content: " + contentString);
