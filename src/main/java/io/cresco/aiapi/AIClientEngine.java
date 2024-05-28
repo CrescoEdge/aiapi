@@ -157,14 +157,7 @@ public class AIClientEngine {
                 multiPart = new MultiPartContentProvider();
                 multiPart.addFilePart("file", "file", new BytesContentProvider(msg.getDataParam("endpoint_payload_binary")), null);
                 multiPart.addFieldPart("model", new StringContentProvider("whisper-1"), null);
-                
-                /*
-                curl --request POST \
-                --url http://10.10.10.55:8082/v1/audio/transcriptions \
-                --header 'Content-Type: multipart/form-data' \
-                --form file=@sample-0.mp3 \
-                --form model=whisper-1
-                 */
+
             }
 
             if(url != null) {
@@ -292,9 +285,10 @@ public class AIClientEngine {
             }
 
             if(plugin.getConfig().getStringParam("endpoint_url_transcribe") != null) {
-                String embUrl = remoteLeadingSlash(plugin.getConfig().getStringParam("endpoint_url_transcribe")) + "/info";
+                String tmpurl = plugin.getConfig().getStringParam("endpoint_url_transcribe").replace("/v1/audio/transcriptions","");
+                String transcribeUrl = remoteLeadingSlash(tmpurl) + "/health";
 
-                Map<String,Object> transcribeResponseMap = getInfo(embUrl);
+                Map<String,Object> transcribeResponseMap = getInfo(transcribeUrl);
                 serviceMap.put("transcribe", new HashMap<>());
                 serviceMap.get("transcribe").put("service_id", endpointTranscribeServiceId);
                 serviceMap.get("transcribe").put("info", transcribeResponseMap);
