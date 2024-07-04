@@ -326,6 +326,7 @@ public class AIClientEngine {
                     serviceMap.put("tool", new HashMap<>());
                     serviceMap.get("tool").put("service_id", endpointToolServiceId);
                     serviceMap.get("tool").put("info", toolResponseMap);
+                    serviceList.add("tool");
                 } else {
                     logger.info("TOOL NOT FOUND: " + toolUrl);
                 }
