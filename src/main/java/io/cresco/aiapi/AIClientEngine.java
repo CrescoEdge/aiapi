@@ -25,7 +25,7 @@ public class AIClientEngine {
     private CLogger logger;
     private String endpointChatServiceId;
     private String endpointEmbServiceId;
-
+    private String endpointToolServiceId;
     private String endpointTranscribeServiceId;
     private Timer serviceBroadcastTimer;
 
@@ -39,6 +39,7 @@ public class AIClientEngine {
         gson = new Gson();
         endpointChatServiceId = plugin.getConfig().getStringParam("endpoint_chat_service_id", UUID.randomUUID().toString());
         endpointEmbServiceId = plugin.getConfig().getStringParam("endpoint_emb_service_id", UUID.randomUUID().toString());
+        endpointToolServiceId = plugin.getConfig().getStringParam("endpoint_emb_service_id", UUID.randomUUID().toString());
         endpointTranscribeServiceId = plugin.getConfig().getStringParam("endpoint_transcribe_service_id", UUID.randomUUID().toString());
 
         startServiceBroadcast();
@@ -152,6 +153,8 @@ public class AIClientEngine {
                 url = plugin.getConfig().getStringParam("endpoint_url_chat");
             } else if (endpointEmbServiceId.equals(serviceId)) {
                 url = plugin.getConfig().getStringParam("endpoint_url_emb");
+            } else if (endpointToolServiceId.equals(serviceId)) {
+                url = plugin.getConfig().getStringParam("endpoint_url_tool");
             } else if (endpointTranscribeServiceId.equals(serviceId)) {
                 url = plugin.getConfig().getStringParam("endpoint_url_transcribe");
                 multiPart = new MultiPartContentProvider();
@@ -282,6 +285,17 @@ public class AIClientEngine {
                 serviceMap.get("emb").put("info", embResponseMap);
 
                 serviceList.add("emb");
+
+            }
+
+            if(plugin.getConfig().getStringParam("endpoint_url_tool") != null) {
+                String embUrl = remoteLeadingSlash(plugin.getConfig().getStringParam("endpoint_url_tool")) + "/info";
+
+                Map<String,Object> embResponseMap = getInfo(embUrl);
+                serviceMap.put("tool", new HashMap<>());
+                serviceMap.get("tool").put("service_id", endpointToolServiceId);
+                serviceMap.get("tool").put("info", embResponseMap);
+                serviceList.add("tool");
 
             }
 
