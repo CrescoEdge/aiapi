@@ -18,7 +18,6 @@ import javax.jms.TextMessage;
 import java.io.PrintWriter;
 import java.io.StringWriter;
 import java.lang.reflect.Type;
-import java.net.ConnectException;
 import java.util.*;
 
 public class AIClientEngine {
@@ -349,10 +348,12 @@ public class AIClientEngine {
                 }
             }
 
-        } catch (ConnectException e) {
+        } catch (java.net.ConnectException e) {
+            responseMap = null;
             logger.error("Service endpoint: " + url + " connection refused");
             //e.printStackTrace();
         } catch (Exception ex) {
+            responseMap = null;
             StringWriter sw = new StringWriter();
             PrintWriter pw = new PrintWriter(sw);
             ex.printStackTrace(pw);
