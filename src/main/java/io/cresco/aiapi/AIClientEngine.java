@@ -18,7 +18,9 @@ import javax.jms.TextMessage;
 import java.io.PrintWriter;
 import java.io.StringWriter;
 import java.lang.reflect.Type;
+import java.net.ConnectException;
 import java.util.*;
+import java.util.concurrent.ExecutionException;
 import java.util.concurrent.atomic.AtomicBoolean;
 
 public class AIClientEngine {
@@ -355,10 +357,17 @@ public class AIClientEngine {
                 }
             }
 
-        } catch (java.net.ConnectException e) {
+        } catch (ExecutionException e) {
             responseMap = null;
-            logger.error("Service endpoint: " + url + " connection refused");
-            //e.printStackTrace();
+            if (e.getCause() instanceof ConnectException) {
+                logger.error("Service endpoint: " + url + " connection refused");
+            } else {
+                logger.error("Service endpoint: " + url + " ExecutionException:");
+                StringWriter sw = new StringWriter();
+                PrintWriter pw = new PrintWriter(sw);
+                e.printStackTrace(pw);
+                logger.error("getInfo(String url): " + sw.toString());
+            }
         } catch (Exception ex) {
             responseMap = null;
             logger.error("Service endpoint: " + url + " error:");
