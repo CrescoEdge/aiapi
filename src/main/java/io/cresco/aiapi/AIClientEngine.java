@@ -289,12 +289,12 @@ public class AIClientEngine {
             }
 
             if(plugin.getConfig().getStringParam("endpoint_url_tool") != null) {
-                String embUrl = remoteLeadingSlash(plugin.getConfig().getStringParam("endpoint_url_tool")) + "/info";
+                String toolUrl = remoteLeadingSlash(plugin.getConfig().getStringParam("endpoint_url_tool")) + "/info";
 
-                Map<String,Object> embResponseMap = getInfo(embUrl);
+                Map<String,Object> toolResponseMap = getInfo(toolUrl);
                 serviceMap.put("tool", new HashMap<>());
                 serviceMap.get("tool").put("service_id", endpointToolServiceId);
-                serviceMap.get("tool").put("info", embResponseMap);
+                serviceMap.get("tool").put("info", toolResponseMap);
                 serviceList.add("tool");
 
             }
