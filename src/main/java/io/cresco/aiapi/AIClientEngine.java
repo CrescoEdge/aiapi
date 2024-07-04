@@ -281,10 +281,13 @@ public class AIClientEngine {
 
                 Map<String,Object> chatResponseMap = getInfo(chatUrl);
                 if(chatResponseMap != null) {
+                    logger.info("CHAT FOUND: url: " + chatUrl + " response: " + gson.toJson(chatResponseMap));
                     serviceMap.put("chat", new HashMap<>());
                     serviceMap.get("chat").put("service_id", endpointChatServiceId);
                     serviceMap.get("chat").put("info", chatResponseMap);
                     serviceList.add("chat");
+                } else {
+                    logger.info("CHAT NOT FOUND: " + chatUrl);
                 }
             }
 
@@ -293,10 +296,13 @@ public class AIClientEngine {
 
                 Map<String,Object> embResponseMap = getInfo(embUrl);
                 if(embResponseMap != null) {
+                    logger.info("EMB FOUND: url:" + embUrl + " response: " + gson.toJson(embResponseMap));
                     serviceMap.put("emb", new HashMap<>());
                     serviceMap.get("emb").put("service_id", endpointEmbServiceId);
                     serviceMap.get("emb").put("info", embResponseMap);
                     serviceList.add("emb");
+                } else {
+                    logger.info("EMB NOT FOUND: " + embUrl);
                 }
 
             }
@@ -306,10 +312,13 @@ public class AIClientEngine {
 
                 Map<String,Object> toolResponseMap = getInfo(toolUrl);
                 if(toolResponseMap != null) {
+                    logger.info("TOOL FOUND: url:" + toolUrl + " response: " + gson.toJson(toolResponseMap));
                     serviceMap.put("tool", new HashMap<>());
                     serviceMap.get("tool").put("service_id", endpointToolServiceId);
                     serviceMap.get("tool").put("info", toolResponseMap);
                     serviceList.add("tool");
+                } else {
+                    logger.info("TOOL NOT FOUND: " + toolUrl);
                 }
 
             }
@@ -320,10 +329,13 @@ public class AIClientEngine {
 
                 Map<String,Object> transcribeResponseMap = getInfo(transcribeUrl);
                 if(transcribeResponseMap != null) {
+                    logger.info("TRANSCRIBE FOUND: url:" + transcribeUrl + " response: " + gson.toJson(transcribeUrl));
                     serviceMap.put("transcribe", new HashMap<>());
                     serviceMap.get("transcribe").put("service_id", endpointTranscribeServiceId);
                     serviceMap.get("transcribe").put("info", transcribeResponseMap);
                     serviceList.add("transcribe");
+                } else {
+                    logger.info("TRANSCRIBE NOT FOUND: " + transcribeUrl);
                 }
 
             }
