@@ -19,6 +19,7 @@ import java.io.PrintWriter;
 import java.io.StringWriter;
 import java.lang.reflect.Type;
 import java.util.*;
+import java.util.concurrent.atomic.AtomicBoolean;
 
 public class AIClientEngine {
 
@@ -30,6 +31,8 @@ public class AIClientEngine {
     private String endpointToolServiceId;
     private String endpointTranscribeServiceId;
     private Timer serviceBroadcastTimer;
+
+    private AtomicBoolean inServiceCheck = new AtomicBoolean(false);
 
     private final Type mapType = new TypeToken<Map<String, Object>>() {}.getType();
 
@@ -74,9 +77,13 @@ public class AIClientEngine {
                 try {
 
                     if(plugin.isActive()) {
-                        String serviceMapString = getServiceMapString();
-                        subMessage(serviceMapString);
-                        //logger.info("SUBMITTING: " + serviceMapString);
+                        if (!inServiceCheck.get()) {
+                            inServiceCheck.set(true);
+                            String serviceMapString = getServiceMapString();
+                            subMessage(serviceMapString);
+                            //logger.info("SUBMITTING: " + serviceMapString);
+                            inServiceCheck.set(false);
+                        }
 
                     } else {
                         logger.error("NOT ACTIVE");
@@ -354,6 +361,7 @@ public class AIClientEngine {
             //e.printStackTrace();
         } catch (Exception ex) {
             responseMap = null;
+            logger.error("Service endpoint: " + url + " error:");
             StringWriter sw = new StringWriter();
             PrintWriter pw = new PrintWriter(sw);
             ex.printStackTrace(pw);
