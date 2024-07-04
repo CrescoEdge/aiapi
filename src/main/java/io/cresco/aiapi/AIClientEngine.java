@@ -294,8 +294,15 @@ public class AIClientEngine {
             if(plugin.getConfig().getStringParam("endpoint_url_emb") != null) {
                 String embUrl = remoteLeadingSlash(plugin.getConfig().getStringParam("endpoint_url_emb")) + "/info";
 
+                embUrl = embUrl.replace("/embeddings/info","/health");
+
                 Map<String,Object> embResponseMap = getInfo(embUrl);
+
                 if(embResponseMap != null) {
+                    //add additional info
+                    embResponseMap.put("model","nomic-ai/nomic-embed-text-v1.5");
+                    embResponseMap.put("max_tokens","8196");
+
                     logger.info("EMB FOUND: url:" + embUrl + " response: " + gson.toJson(embResponseMap));
                     serviceMap.put("emb", new HashMap<>());
                     serviceMap.get("emb").put("service_id", endpointEmbServiceId);
@@ -304,12 +311,25 @@ public class AIClientEngine {
                 } else {
                     logger.info("EMB NOT FOUND: " + embUrl);
                 }
-
             }
 
             if(plugin.getConfig().getStringParam("endpoint_url_tool") != null) {
                 String toolUrl = remoteLeadingSlash(plugin.getConfig().getStringParam("endpoint_url_tool")) + "/info";
 
+                int responseStatus = getResponseStatus(toolUrl);
+                if (responseStatus != -1) {
+                    Map<String,Object> toolResponseMap = new HashMap<>();
+                    toolResponseMap.put("model","functionary-small-v2.5");
+                    toolResponseMap.put("max_tokens","8196");
+                    logger.info("TOOL FOUND: url:" + toolUrl + " response: " + gson.toJson(toolResponseMap));
+
+                    serviceMap.put("tool", new HashMap<>());
+                    serviceMap.get("tool").put("service_id", endpointToolServiceId);
+                    serviceMap.get("tool").put("info", toolResponseMap);
+                } else {
+                    logger.info("TOOL NOT FOUND: " + toolUrl);
+                }
+                /*
                 Map<String,Object> toolResponseMap = getInfo(toolUrl);
                 if(toolResponseMap != null) {
                     logger.info("TOOL FOUND: url:" + toolUrl + " response: " + gson.toJson(toolResponseMap));
@@ -320,6 +340,8 @@ public class AIClientEngine {
                 } else {
                     logger.info("TOOL NOT FOUND: " + toolUrl);
                 }
+
+                 */
 
             }
 
@@ -365,7 +387,13 @@ public class AIClientEngine {
 
             if(responseStatus == 200) {
                 if(contentString != null) {
-                    responseMap = gson.fromJson(contentString, mapType);
+                    if(!contentString.isEmpty()) {
+                        responseMap = gson.fromJson(contentString, mapType);
+                        responseMap.put("health","ok");
+                    } else{
+                        responseMap = new HashMap<>();
+                        responseMap.put("health","ok");
+                    }
                 }
             }
 
@@ -389,6 +417,24 @@ public class AIClientEngine {
             logger.error("getInfo(String url): " + sw.toString());
         }
         return responseMap;
+    }
+
+    private int getResponseStatus(String url) {
+
+        int responseStatus = -1;
+        try {
+            HttpClient client = new HttpClient();
+            client.setFollowRedirects(false);
+            client.start();
+            ContentResponse response = client.GET(url);
+            client.stop();
+
+            responseStatus = response.getStatus();
+
+        } catch (Exception ex) {
+            logger.error("getResponseStatus: " + url + " error: " + ex.getMessage());
+        }
+        return responseStatus;
     }
 
     public void shutdown(){
