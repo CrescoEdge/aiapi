@@ -39,7 +39,7 @@ public class AIClientEngine {
         gson = new Gson();
         endpointChatServiceId = plugin.getConfig().getStringParam("endpoint_chat_service_id", UUID.randomUUID().toString());
         endpointEmbServiceId = plugin.getConfig().getStringParam("endpoint_emb_service_id", UUID.randomUUID().toString());
-        endpointToolServiceId = plugin.getConfig().getStringParam("endpoint_emb_service_id", UUID.randomUUID().toString());
+        endpointToolServiceId = plugin.getConfig().getStringParam("endpoint_tool_service_id", UUID.randomUUID().toString());
         endpointTranscribeServiceId = plugin.getConfig().getStringParam("endpoint_transcribe_service_id", UUID.randomUUID().toString());
 
         startServiceBroadcast();
