@@ -15,7 +15,10 @@ import org.eclipse.jetty.client.util.StringContentProvider;
 import org.eclipse.jetty.http.HttpHeader;
 
 import javax.jms.TextMessage;
+import java.io.PrintWriter;
+import java.io.StringWriter;
 import java.lang.reflect.Type;
+import java.net.ConnectException;
 import java.util.*;
 
 public class AIClientEngine {
@@ -269,22 +272,24 @@ public class AIClientEngine {
                 String chatUrl = remoteLeadingSlash(plugin.getConfig().getStringParam("endpoint_url_chat")) + "/info";
 
                 Map<String,Object> chatResponseMap = getInfo(chatUrl);
-                serviceMap.put("chat", new HashMap<>());
-                serviceMap.get("chat").put("service_id", endpointChatServiceId);
-                serviceMap.get("chat").put("info", chatResponseMap);
-
-                serviceList.add("chat");
+                if(chatResponseMap != null) {
+                    serviceMap.put("chat", new HashMap<>());
+                    serviceMap.get("chat").put("service_id", endpointChatServiceId);
+                    serviceMap.get("chat").put("info", chatResponseMap);
+                    serviceList.add("chat");
+                }
             }
 
             if(plugin.getConfig().getStringParam("endpoint_url_emb") != null) {
                 String embUrl = remoteLeadingSlash(plugin.getConfig().getStringParam("endpoint_url_emb")) + "/info";
 
                 Map<String,Object> embResponseMap = getInfo(embUrl);
-                serviceMap.put("emb", new HashMap<>());
-                serviceMap.get("emb").put("service_id", endpointEmbServiceId);
-                serviceMap.get("emb").put("info", embResponseMap);
-
-                serviceList.add("emb");
+                if(embResponseMap != null) {
+                    serviceMap.put("emb", new HashMap<>());
+                    serviceMap.get("emb").put("service_id", endpointEmbServiceId);
+                    serviceMap.get("emb").put("info", embResponseMap);
+                    serviceList.add("emb");
+                }
 
             }
 
@@ -292,10 +297,12 @@ public class AIClientEngine {
                 String toolUrl = remoteLeadingSlash(plugin.getConfig().getStringParam("endpoint_url_tool")) + "/info";
 
                 Map<String,Object> toolResponseMap = getInfo(toolUrl);
-                serviceMap.put("tool", new HashMap<>());
-                serviceMap.get("tool").put("service_id", endpointToolServiceId);
-                serviceMap.get("tool").put("info", toolResponseMap);
-                serviceList.add("tool");
+                if(toolResponseMap != null) {
+                    serviceMap.put("tool", new HashMap<>());
+                    serviceMap.get("tool").put("service_id", endpointToolServiceId);
+                    serviceMap.get("tool").put("info", toolResponseMap);
+                    serviceList.add("tool");
+                }
 
             }
 
@@ -304,11 +311,12 @@ public class AIClientEngine {
                 String transcribeUrl = remoteLeadingSlash(tmpurl) + "/health";
 
                 Map<String,Object> transcribeResponseMap = getInfo(transcribeUrl);
-                serviceMap.put("transcribe", new HashMap<>());
-                serviceMap.get("transcribe").put("service_id", endpointTranscribeServiceId);
-                serviceMap.get("transcribe").put("info", transcribeResponseMap);
-
-                serviceList.add("transcribe");
+                if(transcribeResponseMap != null) {
+                    serviceMap.put("transcribe", new HashMap<>());
+                    serviceMap.get("transcribe").put("service_id", endpointTranscribeServiceId);
+                    serviceMap.get("transcribe").put("info", transcribeResponseMap);
+                    serviceList.add("transcribe");
+                }
 
             }
 
@@ -341,8 +349,14 @@ public class AIClientEngine {
                 }
             }
 
+        } catch (ConnectException e) {
+            logger.error("Service endpoint: " + url + " connection refused");
+            //e.printStackTrace();
         } catch (Exception ex) {
-            ex.printStackTrace();
+            StringWriter sw = new StringWriter();
+            PrintWriter pw = new PrintWriter(sw);
+            ex.printStackTrace(pw);
+            logger.error("getInfo(String url): " + sw.toString());
         }
         return responseMap;
     }
