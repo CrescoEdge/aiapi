@@ -32,6 +32,8 @@ public class HttpUtils {
 
     public MsgEvent getLlmResponse(MsgEvent msg) {
 
+        HttpClient client = null;
+
         try {
 
             String url = msg.getParam("endpoint_url_chat");
@@ -52,7 +54,7 @@ public class HttpUtils {
             }
             logger.error("requesting String: " + requestString);
 
-            HttpClient client = new HttpClient();
+            client = new HttpClient();
             client.setFollowRedirects(false);
             client.start();
 
@@ -77,6 +79,15 @@ public class HttpUtils {
 
         } catch (Exception e) {
             e.printStackTrace();
+        } finally {
+            if(client != null) {
+                try {
+                    client.stop();
+                } catch (Exception e) {
+                    throw new RuntimeException(e);
+                }
+                client = null;
+            }
         }
         return msg;
     }
